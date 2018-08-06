@@ -48,13 +48,13 @@ bool triad_only = false;
 bool output_as_csv = false;
 std::string csv_separator = ",";
 
-// template <typename T>
-void check_solution(const unsigned int ntimes, std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, T& sum);
+// template <typename double>
+void check_solution(const unsigned int ntimes, std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, double& sum);
 
-// template <typename T>
+// template <typename double>
 void run();
 
-// template <typename T>
+// template <typename double>
 void run_triad();
 
 void parseArguments(int argc, char *argv[]);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 }
 
-// template <typename T>
+// template <typename double>
 void run()
 {
   std::streamsize ss = std::cout.precision();
@@ -99,66 +99,66 @@ void run()
   {
     std::cout << "Running kernels " << num_times << " times" << std::endl;
 
-    if (sizeof(T) == sizeof(float))
+    if (sizeof(double) == sizeof(float))
       std::cout << "Precision: float" << std::endl;
     else
       std::cout << "Precision: double" << std::endl;
 
 
     std::cout << std::setprecision(1) << std::fixed
-              << "Array size: " << ARRAY_SIZE*sizeof(T)*1.0E-6 << " MB"
-              << " (=" << ARRAY_SIZE*sizeof(T)*1.0E-9 << " GB)" << std::endl;
-    std::cout << "Total size: " << 3.0*ARRAY_SIZE*sizeof(T)*1.0E-6 << " MB"
-              << " (=" << 3.0*ARRAY_SIZE*sizeof(T)*1.0E-9 << " GB)" << std::endl;
+              << "Array size: " << ARRAY_SIZE*sizeof(double)*1.0E-6 << " MB"
+              << " (=" << ARRAY_SIZE*sizeof(double)*1.0E-9 << " GB)" << std::endl;
+    std::cout << "Total size: " << 3.0*ARRAY_SIZE*sizeof(double)*1.0E-6 << " MB"
+              << " (=" << 3.0*ARRAY_SIZE*sizeof(double)*1.0E-9 << " GB)" << std::endl;
     std::cout.precision(ss);
 
   }
 
   // Create host vectors
-  std::vector<T> a(ARRAY_SIZE);
-  std::vector<T> b(ARRAY_SIZE);
-  std::vector<T> c(ARRAY_SIZE);
+  std::vector<double> a(ARRAY_SIZE);
+  std::vector<double> b(ARRAY_SIZE);
+  std::vector<double> c(ARRAY_SIZE);
 
   // Result of the Dot kernel
-  T sum;
+  double sum;
 
-  Stream<T> *stream;
+  Stream<double> *stream;
 
 #if defined(CUDA)
   // Use the CUDA implementation
-  stream = new CUDAStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new CUDAStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(HIP)
   // Use the HIP implementation
-  stream = new HIPStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new HIPStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(HC)
   // Use the HC implementation
-  stream = new HCStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new HCStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(OCL)
   // Use the OpenCL implementation
-  stream = new OCLStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new OCLStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(USE_RAJA)
   // Use the RAJA implementation
-  stream = new RAJAStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new RAJAStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(KOKKOS)
   // Use the Kokkos implementation
-  stream = new KokkosStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new KokkosStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(ACC)
   // Use the OpenACC implementation
-  stream = new ACCStream<T>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
+  stream = new ACCStream<double>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
 
 #elif defined(SYCL)
   // Use the SYCL implementation
-  stream = new SYCLStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new SYCLStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(OMP)
   // Use the OpenMP implementation
-  stream = new OMPStream<T>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
+  stream = new OMPStream<double>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
 
 #endif
 
@@ -207,7 +207,7 @@ void run()
 
   // Check solutions
   stream->read_arrays(a, b, c);
-  check_solution<T>(num_times, a, b, c, sum);
+  check_solution<double>(num_times, a, b, c, sum);
 
   // Display timing results
   if (output_as_csv)
@@ -238,11 +238,11 @@ void run()
 
   std::string labels[5] = {"Copy", "Mul", "Add", "Triad", "Dot"};
   size_t sizes[5] = {
-    2 * sizeof(T) * ARRAY_SIZE,
-    2 * sizeof(T) * ARRAY_SIZE,
-    3 * sizeof(T) * ARRAY_SIZE,
-    3 * sizeof(T) * ARRAY_SIZE,
-    2 * sizeof(T) * ARRAY_SIZE
+    2 * sizeof(double) * ARRAY_SIZE,
+    2 * sizeof(double) * ARRAY_SIZE,
+    3 * sizeof(double) * ARRAY_SIZE,
+    3 * sizeof(double) * ARRAY_SIZE,
+    2 * sizeof(double) * ARRAY_SIZE
   };
 
   for (int i = 0; i < 5; i++)
@@ -260,7 +260,7 @@ void run()
         << labels[i] << csv_separator
         << num_times << csv_separator
         << ARRAY_SIZE << csv_separator
-        << sizeof(T) << csv_separator
+        << sizeof(double) << csv_separator
         << 1.0E-6 * sizes[i] / (*minmax.first) << csv_separator
         << *minmax.first << csv_separator
         << *minmax.second << csv_separator
@@ -283,62 +283,62 @@ void run()
 
 }
 
-// template <typename T>
+// template <typename double>
 void run_triad()
 {
   std::cout << "Running triad " << num_times << " times" << std::endl;
   std::cout << "Number of elements: " << ARRAY_SIZE << std::endl;
 
-  if (sizeof(T) == sizeof(float))
+  if (sizeof(double) == sizeof(float))
     std::cout << "Precision: float" << std::endl;
   else
     std::cout << "Precision: double" << std::endl;
 
   // Create host vectors
-  std::vector<T> a(ARRAY_SIZE);
-  std::vector<T> b(ARRAY_SIZE);
-  std::vector<T> c(ARRAY_SIZE);
+  std::vector<double> a(ARRAY_SIZE);
+  std::vector<double> b(ARRAY_SIZE);
+  std::vector<double> c(ARRAY_SIZE);
   std::streamsize ss = std::cout.precision();
   std::cout << std::setprecision(1) << std::fixed
-    << "Array size: " << ARRAY_SIZE*sizeof(T)*1.0E-3 << " KB"
-    << " (=" << ARRAY_SIZE*sizeof(T)*1.0E-6 << " MB)" << std::endl;
-  std::cout << "Total size: " << 3.0*ARRAY_SIZE*sizeof(T)*1.0E-3 << " KB"
-    << " (=" << 3.0*ARRAY_SIZE*sizeof(T)*1.0E-6 << " MB)" << std::endl;
+    << "Array size: " << ARRAY_SIZE*sizeof(double)*1.0E-3 << " KB"
+    << " (=" << ARRAY_SIZE*sizeof(double)*1.0E-6 << " MB)" << std::endl;
+  std::cout << "Total size: " << 3.0*ARRAY_SIZE*sizeof(double)*1.0E-3 << " KB"
+    << " (=" << 3.0*ARRAY_SIZE*sizeof(double)*1.0E-6 << " MB)" << std::endl;
   std::cout.precision(ss);
 
-  Stream<T> *stream;
+  Stream<double> *stream;
 
 #if defined(CUDA)
   // Use the CUDA implementation
-  stream = new CUDAStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new CUDAStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(HIP)
   // Use the HIP implementation
-  stream = new HIPStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new HIPStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(OCL)
   // Use the OpenCL implementation
-  stream = new OCLStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new OCLStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(USE_RAJA)
   // Use the RAJA implementation
-  stream = new RAJAStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new RAJAStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(KOKKOS)
   // Use the Kokkos implementation
-  stream = new KokkosStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new KokkosStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(ACC)
   // Use the OpenACC implementation
-  stream = new ACCStream<T>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
+  stream = new ACCStream<double>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
 
 #elif defined(SYCL)
   // Use the SYCL implementation
-  stream = new SYCLStream<T>(ARRAY_SIZE, deviceIndex);
+  stream = new SYCLStream<double>(ARRAY_SIZE, deviceIndex);
 
 #elif defined(OMP)
   // Use the OpenMP implementation
-  stream = new OMPStream<T>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
+  stream = new OMPStream<double>(ARRAY_SIZE, a.data(), b.data(), c.data(), deviceIndex);
 
 #endif
 
@@ -358,12 +358,12 @@ void run_triad()
   double runtime = std::chrono::duration_cast<std::chrono::duration<double> >(t2 - t1).count();
 
   // Check solutions
-  T sum = 0.0;
+  double sum = 0.0;
   stream->read_arrays(a, b, c);
-  check_solution<T>(num_times, a, b, c, sum);
+  check_solution<double>(num_times, a, b, c, sum);
 
   // Display timing results
-  double total_bytes = 3 * sizeof(T) * ARRAY_SIZE * num_times;
+  double total_bytes = 3 * sizeof(double) * ARRAY_SIZE * num_times;
   double bandwidth = 1.0E-9 * (total_bytes / runtime);
   std::cout
     << "--------------------------------"
@@ -376,16 +376,16 @@ void run_triad()
   delete stream;
 }
 
-// template <typename T>
-void check_solution(const unsigned int ntimes, std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, T& sum)
+// template <typename double>
+void check_solution(const unsigned int ntimes, std::vector<double>& a, std::vector<double>& b, std::vector<double>& c, double& sum)
 {
   // Generate correct solution
-  T goldA = startA;
-  T goldB = startB;
-  T goldC = startC;
-  T goldSum = 0.0;
+  double goldA = startA;
+  double goldB = startB;
+  double goldC = startC;
+  double goldSum = 0.0;
 
-  const T scalar = startScalar;
+  const double scalar = startScalar;
 
   for (unsigned int i = 0; i < ntimes; i++)
   {
@@ -403,15 +403,15 @@ void check_solution(const unsigned int ntimes, std::vector<T>& a, std::vector<T>
   goldSum = goldA * goldB * ARRAY_SIZE;
 
   // Calculate the average error
-  double errA = std::accumulate(a.begin(), a.end(), 0.0, [&](double sum, const T val){ return sum + fabs(val - goldA); });
+  double errA = std::accumulate(a.begin(), a.end(), 0.0, [&](double sum, const double val){ return sum + fabs(val - goldA); });
   errA /= a.size();
-  double errB = std::accumulate(b.begin(), b.end(), 0.0, [&](double sum, const T val){ return sum + fabs(val - goldB); });
+  double errB = std::accumulate(b.begin(), b.end(), 0.0, [&](double sum, const double val){ return sum + fabs(val - goldB); });
   errB /= b.size();
-  double errC = std::accumulate(c.begin(), c.end(), 0.0, [&](double sum, const T val){ return sum + fabs(val - goldC); });
+  double errC = std::accumulate(c.begin(), c.end(), 0.0, [&](double sum, const double val){ return sum + fabs(val - goldC); });
   errC /= c.size();
   double errSum = fabs(sum - goldSum);
 
-  double epsi = std::numeric_limits<T>::epsilon() * 100.0;
+  double epsi = std::numeric_limits<double>::epsilon() * 100.0;
 
   if (errA > epsi)
     std::cerr
