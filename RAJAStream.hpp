@@ -51,6 +51,6 @@ class RAJAStream
 
     virtual void copy();
 
-    virtual void init_arrays(double initA, double initB, double initC);;
+    virtual void init_arrays(double initA, double initB, double initC);
 };
 
