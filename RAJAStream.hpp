@@ -25,8 +25,8 @@ typedef RAJA::omp_reduce reduce_policy;
 // typedef RAJA::cuda_reduce<block_size> reduce_policy;
 #endif
 
-// template <class T>
-class RAJAStream : public Stream<T>
+// template <class double>
+class RAJAStream : public Stream<double>
 {
   protected:
     // Size of arrays
@@ -53,10 +53,10 @@ class RAJAStream : public Stream<T>
     virtual void add() override;
     virtual void mul() override;
     virtual void triad() override;
-    virtual T dot() override;
+    virtual double dot() override;
 
-    virtual void init_arrays(T initA, T initB, T initC) override;
+    virtual void init_arrays(double initA, double initB, double initC) override;
     virtual void read_arrays(
-            std::vector<T>& a, std::vector<T>& b, std::vector<T>& c) override;
+            std::vector<double>& a, std::vector<double>& b, std::vector<double>& c) override;
 };
 

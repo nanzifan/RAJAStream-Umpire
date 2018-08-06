@@ -48,13 +48,13 @@ bool triad_only = false;
 bool output_as_csv = false;
 std::string csv_separator = ",";
 
-template <typename T>
+// template <typename T>
 void check_solution(const unsigned int ntimes, std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, T& sum);
 
-template <typename T>
+// template <typename T>
 void run();
 
-template <typename T>
+// template <typename T>
 void run_triad();
 
 void parseArguments(int argc, char *argv[]);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 
 }
 
-template <typename T>
+// template <typename T>
 void run()
 {
   std::streamsize ss = std::cout.precision();
@@ -283,7 +283,7 @@ void run()
 
 }
 
-template <typename T>
+// template <typename T>
 void run_triad()
 {
   std::cout << "Running triad " << num_times << " times" << std::endl;
@@ -376,7 +376,7 @@ void run_triad()
   delete stream;
 }
 
-template <typename T>
+// template <typename T>
 void check_solution(const unsigned int ntimes, std::vector<T>& a, std::vector<T>& b, std::vector<T>& c, T& sum)
 {
   // Generate correct solution

@@ -22,7 +22,7 @@ using RAJA::RangeSegment;
 #define ALIGNMENT (2*1024*1024) // 2MB
 #endif
 
-// template <class T>
+// template <class double>
 RAJAStream<double>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
     : array_size(ARRAY_SIZE)
 {
@@ -45,7 +45,7 @@ RAJAStream<double>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_i
 #endif
 }
 
-// template <class T>
+// template <class double>
 RAJAStream<double>::~RAJAStream()
 {
 #ifdef RAJA_TARGET_CPU
@@ -59,13 +59,13 @@ RAJAStream<double>::~RAJAStream()
 #endif
 }
 
-// template <class T>
+// template <class double>
 void RAJAStream<double>::init_arrays(double initA, double initB, double initC)
 {
   std::cout << "init" << std::endl;
   // // double* RAJA_RESTRICT a = d_a;
-  // // T* RAJA_RESTRICT b = d_b;
-  // // T* RAJA_RESTRICT c = d_c;
+  // // double* RAJA_RESTRICT b = d_b;
+  // // double* RAJA_RESTRICT c = d_c;
   // forall<policy>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   // {
   //   d_a[index] = initA;
@@ -117,7 +117,7 @@ void RAJAStream<double>::read_arrays(
 }
 
 // template <typename double>
-// __global__ void copy_kernel(const T * a, T * c)
+// __global__ void copy_kernel(const double * a, double * c)
 // {
 //   const int i = blockDim.x * blockIdx.x + threadIdx.x;
 //   c[i] = a[i];
@@ -144,8 +144,8 @@ void RAJAStream<double>::copy()
   // copy_kernel<<<1, 1024>>>(d_a, d_c);
   // std::cout << "kernel functino finished " << array_size << std::endl;
 
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT c = d_c;
+  // double* RAJA_RESTRICT a = d_a;
+  // double* RAJA_RESTRICT c = d_c;
   RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
     [=] RAJA_DEVICE (int i)
   {
@@ -157,57 +157,57 @@ void RAJAStream<double>::copy()
   });
 }
 
-template <class T>
-void RAJAStream<T>::mul()
+// template <class double>
+void RAJAStream<double>::mul()
 {
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
-  const T scalar = startScalar;
+  // double* RAJA_RESTRICT b = d_b;
+  // double* RAJA_RESTRICT c = d_c;
+  const double scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
     d_b[index] = scalar*d_c[index];
   });
 }
 
-template <class T>
-void RAJAStream<T>::add()
+// template <class double>
+void RAJAStream<double>::add()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
+  // double* RAJA_RESTRICT a = d_a;
+  // double* RAJA_RESTRICT b = d_b;
+  // double* RAJA_RESTRICT c = d_c;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
     d_c[index] = d_a[index] + d_b[index];
   });
 }
 
-template <class T>
-void RAJAStream<T>::triad()
+// template <class double>
+void RAJAStream<double>::triad()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
-  const T scalar = startScalar;
+  // double* RAJA_RESTRICT a = d_a;
+  // double* RAJA_RESTRICT b = d_b;
+  // double* RAJA_RESTRICT c = d_c;
+  const double scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
     d_a[index] = d_b[index] + scalar*d_c[index];
   });
 }
 
-template <class T>
-T RAJAStream<T>::dot()
+// template <class double>
+double RAJAStream<double>::dot()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
+  // double* RAJA_RESTRICT a = d_a;
+  // double* RAJA_RESTRICT b = d_b;
 
-  RAJA::ReduceSum<RAJA::cuda_reduce<256>, T> sum(0.0);
+  RAJA::ReduceSum<RAJA::cuda_reduce<256>, double> sum(0.0);
 
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
     sum += d_a[index] * d_b[index];
   });
 
-  return T(sum);
+  return double(sum);
 }
 
 
@@ -228,5 +228,5 @@ std::string getDeviceDriver(const int device)
   return "RAJA";
 }
 
-template class RAJAStream<float>;
-template class RAJAStream<double>;
+// template class RAJAStream<float>;
+// template class RAJAStream<double>;

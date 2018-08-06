@@ -16,7 +16,7 @@
 #define startC (0.0)
 #define startScalar (0.4)
 
-template <class T>
+// template <class double>
 class Stream
 {
   public:
@@ -29,11 +29,11 @@ class Stream
     virtual void mul() = 0;
     virtual void add() = 0;
     virtual void triad() = 0;
-    virtual T dot() = 0;
+    virtual double dot() = 0;
 
     // Copy memory between host and device
-    virtual void init_arrays(T initA, T initB, T initC) = 0;
-    virtual void read_arrays(std::vector<T>& a, std::vector<T>& b, std::vector<T>& c) = 0;
+    virtual void init_arrays(double initA, double initB, double initC) = 0;
+    virtual void read_arrays(std::vector<double>& a, std::vector<double>& b, std::vector<double>& c) = 0;
 
 };
 
