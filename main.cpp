@@ -53,7 +53,8 @@ std::string csv_separator = ",";
 int main(int argc, char *argv[])
 {
 
-  RAJAStream *r(ARRAY_SIZE, deviceIndex);
+  RAJAStream *r;
+  r = new RAJAStream(ARRAY_SIZE, deviceIndex);
   r->init_arrays(1.0,2.0,0);
   r->copy();
 }

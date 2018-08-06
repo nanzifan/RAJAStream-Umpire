@@ -49,8 +49,8 @@ class RAJAStream
     RAJAStream(const unsigned int, const int);
     ~RAJAStream();
 
-    virtual void copy() override;
+    virtual void copy();
 
-    virtual void init_arrays(double initA, double initB, double initC) override;
+    virtual void init_arrays(double initA, double initB, double initC);;
 };
 
