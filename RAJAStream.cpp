@@ -13,7 +13,7 @@
 
 // #ifndef ARRAY_SIZE
 
-RAJAStream::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
+RAJAStream::RAJAStream(const unsigned int ARRAY_SIZE)
     : array_size(ARRAY_SIZE)
 {
 
@@ -24,13 +24,16 @@ RAJAStream::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   cudaMalloc((void**)&d_a, sizeof(double)*ARRAY_SIZE);
   cudaMalloc((void**)&d_b, sizeof(double)*ARRAY_SIZE);
   cudaMalloc((void**)&d_c, sizeof(double)*ARRAY_SIZE);
-  cudaDeviceSynchronize();
+  // cudaDeviceSynchronize();
 
 }
 
 
 RAJAStream::~RAJAStream()
 {
+  free(a);
+  free(b);
+  free(c);
   cudaFree(d_a);
   cudaFree(d_b);
   cudaFree(d_c);

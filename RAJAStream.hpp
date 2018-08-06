@@ -46,11 +46,11 @@ class RAJAStream
 
   public:
 
-    RAJAStream(const unsigned int, const int);
+    RAJAStream(const unsigned int size);
     ~RAJAStream();
 
-    virtual void copy();
+    void copy();
 
-    virtual void init_arrays(double initA, double initB, double initC);
+    void init_arrays(double initA, double initB, double initC);
 };
 
