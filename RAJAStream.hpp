@@ -25,7 +25,7 @@ typedef RAJA::omp_reduce reduce_policy;
 // typedef RAJA::cuda_reduce<block_size> reduce_policy;
 #endif
 
-template <class T>
+// template <class T>
 class RAJAStream : public Stream<T>
 {
   protected:
@@ -35,14 +35,14 @@ class RAJAStream : public Stream<T>
     // Contains iteration space
     // RAJA::IndexSet index_set;
 
-    T* a;
-    T* b;
-    T* c;
+    double* a;
+    double* b;
+    double* c;
 
     // Device side pointers to arrays
-    T* d_a;
-    T* d_b;
-    T* d_c;
+    double* d_a;
+    double* d_b;
+    double* d_c;
 
   public:
 

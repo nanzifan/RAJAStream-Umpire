@@ -22,31 +22,31 @@ using RAJA::RangeSegment;
 #define ALIGNMENT (2*1024*1024) // 2MB
 #endif
 
-template <class T>
-RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
+// template <class T>
+RAJAStream<double>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
     : array_size(ARRAY_SIZE)
 {
   // RangeSegment(0, ARRAY_SIZE);
   // index_set.push_back(seg);
 
 #ifdef RAJA_TARGET_CPU
-  d_a = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
-  d_b = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
-  d_c = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
+  d_a = (double*)aligned_alloc(ALIGNMENT, sizeof(double)*ARRAY_SIZE);
+  d_b = (double*)aligned_alloc(ALIGNMENT, sizeof(double)*ARRAY_SIZE);
+  d_c = (double*)aligned_alloc(ALIGNMENT, sizeof(double)*ARRAY_SIZE);
 #else
   std::cout << "memory allocation\n"; 
-  a = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  b = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  c = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  cudaMalloc((void**)&d_a, sizeof(T)*ARRAY_SIZE);
-  cudaMalloc((void**)&d_b, sizeof(T)*ARRAY_SIZE);
-  cudaMalloc((void**)&d_c, sizeof(T)*ARRAY_SIZE);
+  a = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+  b = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+  c = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+  cudaMalloc((void**)&d_a, sizeof(double)*ARRAY_SIZE);
+  cudaMalloc((void**)&d_b, sizeof(double)*ARRAY_SIZE);
+  cudaMalloc((void**)&d_c, sizeof(double)*ARRAY_SIZE);
   cudaDeviceSynchronize();
 #endif
 }
 
-template <class T>
-RAJAStream<T>::~RAJAStream()
+// template <class T>
+RAJAStream<double>::~RAJAStream()
 {
 #ifdef RAJA_TARGET_CPU
   free(d_a);
@@ -59,11 +59,11 @@ RAJAStream<T>::~RAJAStream()
 #endif
 }
 
-template <class T>
-void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
+// template <class T>
+void RAJAStream<double>::init_arrays(double initA, double initB, double initC)
 {
   std::cout << "init" << std::endl;
-  // // T* RAJA_RESTRICT a = d_a;
+  // // double* RAJA_RESTRICT a = d_a;
   // // T* RAJA_RESTRICT b = d_b;
   // // T* RAJA_RESTRICT c = d_c;
   // forall<policy>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
@@ -87,18 +87,18 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
     std::cout << "a[i] " << a[i] << " b[i] " << b[i] << " c[i] " << c[i] << std::endl;
   }
 
-  cudaMemcpy(d_a, a, sizeof(T)*array_size, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_b, b, sizeof(T)*array_size, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_c, c, sizeof(T)*array_size, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_a, a, sizeof(double)*array_size, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_b, b, sizeof(double)*array_size, cudaMemcpyHostToDevice);
+  cudaMemcpy(d_c, c, sizeof(double)*array_size, cudaMemcpyHostToDevice);
 
   std::cout << "end init" << std::endl;
 
-  T* tmp1 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp2 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp3 = (T*)malloc(sizeof(T) * array_size);
-  cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  double* tmp1 = (double*)malloc(sizeof(double) * array_size);
+  double* tmp2 = (double*)malloc(sizeof(double) * array_size);
+  double* tmp3 = (double*)malloc(sizeof(double) * array_size);
+  cudaMemcpy(tmp1, d_a, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(tmp2, d_b, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(tmp3, d_c, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
 
   std::cout << "test device init " << std::endl;
   for (int i=0; i<array_size; i++)
@@ -107,34 +107,34 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
   }
 }
 
-template <class T>
-void RAJAStream<T>::read_arrays(
-        std::vector<T>& a, std::vector<T>& b, std::vector<T>& c)
+// template <class double>
+void RAJAStream<double>::read_arrays(
+        std::vector<double>& a, std::vector<double>& b, std::vector<double>& c)
 {
   std::copy(d_a, d_a + array_size, a.data());
   std::copy(d_b, d_b + array_size, b.data());
   std::copy(d_c, d_c + array_size, c.data());
 }
 
-// template <typename T>
+// template <typename double>
 // __global__ void copy_kernel(const T * a, T * c)
 // {
 //   const int i = blockDim.x * blockIdx.x + threadIdx.x;
 //   c[i] = a[i];
 // }
 
-template <class T>
-void RAJAStream<T>::copy()
+template <class double>
+void RAJAStream<double>::copy()
 {
   std::cout << "copy" << std::endl;
   std::cout << "array_size is " << array_size << std::endl;
 
-  T* tmp1 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp2 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp3 = (T*)malloc(sizeof(T) * array_size);
-  cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  double* tmp1 = (double*)malloc(sizeof(double) * array_size);
+  double* tmp2 = (double*)malloc(sizeof(double) * array_size);
+  double* tmp3 = (double*)malloc(sizeof(double) * array_size);
+  cudaMemcpy(tmp1, d_a, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(tmp2, d_b, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(tmp3, d_c, sizeof(double)*array_size, cudaMemcpyDeviceToHost);
 
   std::cout << "test device init " << std::endl;
   for (int i=0; i<array_size; i++)
