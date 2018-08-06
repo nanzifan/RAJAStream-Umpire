@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 {
 
   RAJAStream *r;
-  r = new RAJAStream(ARRAY_SIZE, deviceIndex);
+  r = new RAJAStream(ARRAY_SIZE);
   r->init_arrays(1.0,2.0,0);
   r->copy();
 }
