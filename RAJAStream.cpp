@@ -111,13 +111,13 @@ void RAJAStream::copy()
     std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
   }
 
-  double* RAJA_RESTRICT a = d_a;
-  double* RAJA_RESTRICT c = d_c;
+  // double* RAJA_RESTRICT a = d_a;
+  // double* RAJA_RESTRICT c = d_c;
 
   RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
     [=] RAJA_DEVICE (int i) {
     printf("inside copy, i is%d\n", i);
-    printf("d_a[i] is %d\n", a[i]);
-    c[i] = a[i];
+    printf("d_a[i] is %d\n", d_a[i]);
+    d_c[i] = d_a[i];
   });
 }
