@@ -26,7 +26,7 @@ using RAJA::RangeSegment;
 auto& rm = umpire::ResourceManager::getInstance();
 auto h_alloc = rm.getAllocator("HOST");
 auto d_alloc = rm.getAllocator("DEVICE");
-auto dc_alloc = rm.getAllocator("DEVICE_CONST");
+// auto dc_alloc = rm.getAllocator("DEVICE_CONST");
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
