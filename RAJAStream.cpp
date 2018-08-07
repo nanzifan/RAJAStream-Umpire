@@ -144,15 +144,15 @@ void RAJAStream<T>::copy()
   // copy_kernel<<<1, 1024>>>(d_a, d_c);
   // std::cout << "kernel functino finished " << array_size << std::endl;
 
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT c = d_c;
+  T* RAJA_RESTRICT a = d_a;
+  T* RAJA_RESTRICT c = d_c;
   RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
     [=] RAJA_DEVICE (int i)
   {
     // std::cout << "inside copy, i is " << i << std::endl;
     // std::cout << "d_a[i] is " << d_a[i] << std::endl;
     printf("inside copy, i is%d\n", i);
-    printf("d_a[i] is %d\n", d_a[i]);
+    printf("d_a[i] is %lf\n", d_a[i]);
     d_c[i] += d_a[i];
   });
 }
