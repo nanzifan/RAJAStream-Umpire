@@ -160,51 +160,51 @@ void RAJAStream<T>::copy()
 template <class T>
 void RAJAStream<T>::mul()
 {
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
+  T* RAJA_RESTRICT b = d_b;
+  T* RAJA_RESTRICT c = d_c;
   const T scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    d_b[index] = scalar*d_c[index];
+    b[index] = scalar*b[index];
   });
 }
 
 template <class T>
 void RAJAStream<T>::add()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
+  T* RAJA_RESTRICT a = d_a;
+  T* RAJA_RESTRICT b = d_b;
+  T* RAJA_RESTRICT c = d_c;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    d_c[index] = d_a[index] + d_b[index];
+    c[index] = a[index] + b[index];
   });
 }
 
 template <class T>
 void RAJAStream<T>::triad()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
-  // T* RAJA_RESTRICT c = d_c;
+  T* RAJA_RESTRICT a = d_a;
+  T* RAJA_RESTRICT b = d_b;
+  T* RAJA_RESTRICT c = d_c;
   const T scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    d_a[index] = d_b[index] + scalar*d_c[index];
+    a[index] = b[index] + scalar*c[index];
   });
 }
 
 template <class T>
 T RAJAStream<T>::dot()
 {
-  // T* RAJA_RESTRICT a = d_a;
-  // T* RAJA_RESTRICT b = d_b;
+  T* RAJA_RESTRICT a = d_a;
+  T* RAJA_RESTRICT b = d_b;
 
   RAJA::ReduceSum<RAJA::cuda_reduce<256>, T> sum(0.0);
 
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    sum += d_a[index] * d_b[index];
+    sum += a[index] * b[index];
   });
 
   return T(sum);
