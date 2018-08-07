@@ -76,35 +76,14 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
   for (int i=0; i<array_size; i++)
   {
     a[i] = initA;
-    // std::cout << "a allocate\n";
     b[i] = initB;
     c[i] = initC;
   }
-
-  // std::cout << "host init finish" << std::endl;
-  // for (int i=0; i<array_size; i++)
-  // {
-  //   // std::cout << "a[i] " << a[i] << " b[i] " << b[i] << " c[i] " << c[i] << std::endl;
-  // }
 
   cudaMemcpy(d_a, a, sizeof(T)*array_size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_b, b, sizeof(T)*array_size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_c, c, sizeof(T)*array_size, cudaMemcpyHostToDevice);
 
-  // std::cout << "end init" << std::endl;
-
-  // T* tmp1 = (T*)malloc(sizeof(T) * array_size);
-  // T* tmp2 = (T*)malloc(sizeof(T) * array_size);
-  // T* tmp3 = (T*)malloc(sizeof(T) * array_size);
-  // cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  // cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  // cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-
-  // std::cout << "test device init " << std::endl;
-  // for (int i=0; i<array_size; i++)
-  // {
-  //   std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
-  // }
 }
 
 template <class T>
