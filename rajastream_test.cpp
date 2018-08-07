@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
 		[=] RAJA_DEVICE (int i) {
 			printf("inside copy, i is%d\n", i);
-			printf("d_a[i] is %d\n", d_a[i]);
+			printf("d_a[i] is %lf\n", d_a[i]);
 			d_c[i] = d_a[i];
 	});
 
