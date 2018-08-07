@@ -26,7 +26,7 @@ using RAJA::RangeSegment;
 auto& rm = umpire::ResourceManager::getInstance();
 auto h_alloc = rm.getAllocator("HOST");
 auto d_alloc = rm.getAllocator("DEVICE");
-// auto dc_alloc = rm.getAllocator("DEVICE_CONST");
+auto dc_alloc = rm.getAllocator("DEVICE_CONST");
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
@@ -50,7 +50,7 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   a = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
-  d_a = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
+  d_a = static_cast<T*>(dc_alloc.allocate(array_size * sizeof(T)));
   d_b = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
@@ -68,7 +68,7 @@ RAJAStream<T>::~RAJAStream()
   free(d_b);
   free(d_c);
 #else
-  d_alloc.deallocate(d_a);
+  dc_alloc.deallocate(d_a);
   d_alloc.deallocate(d_b);
   d_alloc.deallocate(d_c);
 #endif
