@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "RAJA/RAJA.hpp"
 // Default size of 2^13
 unsigned int ARRAY_SIZE = 16;
 
