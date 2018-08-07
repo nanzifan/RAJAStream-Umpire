@@ -152,8 +152,8 @@ void RAJAStream<T>::copy()
     // std::cout << "inside copy, i is " << i << std::endl;
     // std::cout << "d_a[i] is " << d_a[i] << std::endl;
     printf("inside copy, i is%d\n", i);
-    printf("d_a[i] is %lf\n", d_a[i]);
-    d_c[i] += d_a[i];
+    printf("d_a[i] is %lf\n", a[i]);
+    c[i] += a[i];
   });
 }
 
