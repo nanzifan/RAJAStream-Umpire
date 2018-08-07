@@ -41,7 +41,7 @@
 
 // Default size of 2^13
 unsigned int ARRAY_SIZE = 16;
-unsigned int num_times = 100;
+unsigned int num_times = 2;
 unsigned int deviceIndex = 0;
 bool use_float = false;
 bool triad_only = false;

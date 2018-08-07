@@ -93,18 +93,18 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
 
   std::cout << "end init" << std::endl;
 
-  T* tmp1 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp2 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp3 = (T*)malloc(sizeof(T) * array_size);
-  cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // T* tmp1 = (T*)malloc(sizeof(T) * array_size);
+  // T* tmp2 = (T*)malloc(sizeof(T) * array_size);
+  // T* tmp3 = (T*)malloc(sizeof(T) * array_size);
+  // cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
 
-  std::cout << "test device init " << std::endl;
-  for (int i=0; i<array_size; i++)
-  {
-    std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
-  }
+  // std::cout << "test device init " << std::endl;
+  // for (int i=0; i<array_size; i++)
+  // {
+  //   std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
+  // }
 }
 
 template <class T>
@@ -129,18 +129,18 @@ void RAJAStream<T>::copy()
   std::cout << "copy" << std::endl;
   std::cout << "array_size is " << array_size << std::endl;
 
-  T* tmp1 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp2 = (T*)malloc(sizeof(T) * array_size);
-  T* tmp3 = (T*)malloc(sizeof(T) * array_size);
-  cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
-  cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // T* tmp1 = (T*)malloc(sizeof(T) * array_size);
+  // T* tmp2 = (T*)malloc(sizeof(T) * array_size);
+  // T* tmp3 = (T*)malloc(sizeof(T) * array_size);
+  // cudaMemcpy(tmp1, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(tmp2, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  // cudaMemcpy(tmp3, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
 
-  std::cout << "test device init " << std::endl;
-  for (int i=0; i<array_size; i++)
-  {
-    std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
-  }
+  // std::cout << "test device init " << std::endl;
+  // for (int i=0; i<array_size; i++)
+  // {
+  //   std::cout << "a[i] " << tmp1[i] << " b[i] " << tmp2[i] << " c[i] " << tmp3[i] << std::endl;
+  // }
   // copy_kernel<<<1, 1024>>>(d_a, d_c);
   // std::cout << "kernel functino finished " << array_size << std::endl;
 
@@ -153,25 +153,28 @@ void RAJAStream<T>::copy()
     // std::cout << "d_a[i] is " << d_a[i] << std::endl;
     printf("inside copy, i is%d\n", i);
     printf("d_a[i] is %lf\n", a[i]);
-    c[i] += a[i];
+    c[i] = a[i];
   });
 }
 
 template <class T>
 void RAJAStream<T>::mul()
 {
-  T* RAJA_RESTRICT b = d_b;
+    std::cout << "mul" << std::endl;
+  T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT c = d_c;
   const T scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    b[index] = scalar*b[index];
+    c[index] = scalar*a[index];
   });
 }
 
 template <class T>
 void RAJAStream<T>::add()
 {
+  std::cout << "add" << std::endl;
+
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
   T* RAJA_RESTRICT c = d_c;
@@ -184,19 +187,23 @@ void RAJAStream<T>::add()
 template <class T>
 void RAJAStream<T>::triad()
 {
+    std::cout << "triad" << std::endl;
+
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
   T* RAJA_RESTRICT c = d_c;
   const T scalar = startScalar;
   forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
   {
-    a[index] = b[index] + scalar*c[index];
+    c[index] = b[index] + scalar*a[index];
   });
 }
 
 template <class T>
 T RAJAStream<T>::dot()
 {
+    std::cout << "dot" << std::endl;
+
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
 
