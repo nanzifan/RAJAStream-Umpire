@@ -113,9 +113,9 @@ void RAJAStream<T>::read_arrays(
 {
     std::cout << "read" << std::endl;
 
-  std::copy(d_a, d_a + array_size, a.data());
-  std::copy(d_b, d_b + array_size, b.data());
-  std::copy(d_c, d_c + array_size, c.data());
+  cudaMemcpy(a, d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(b, d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
+  cudaMemcpy(c, d_c, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
 }
 
 // template <typename T>
