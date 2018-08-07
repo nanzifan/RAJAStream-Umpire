@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <stdio.h>
+#include "umpire/ResourceManager.hpp"
 
 using RAJA::forall;
 using RAJA::RangeSegment;
@@ -21,6 +22,11 @@ using RAJA::RangeSegment;
 #ifndef ALIGNMENT
 #define ALIGNMENT (2*1024*1024) // 2MB
 #endif
+
+auto& rm = umpire::ResourceManager::getInstance();
+auto h_alloc = rm.getAllocator("HOST");
+auto d_alloc = rm.getAllocator("DEVICE");
+auto dc_alloc = rm.getAllocator("DEVICE_CONST");
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
@@ -35,12 +41,18 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   d_c = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
 #else
   // std::cout << "memory allocation\n"; 
-  a = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  b = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  c = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  cudaMalloc((void**)&d_a, sizeof(T)*ARRAY_SIZE);
-  cudaMalloc((void**)&d_b, sizeof(T)*ARRAY_SIZE);
-  cudaMalloc((void**)&d_c, sizeof(T)*ARRAY_SIZE);
+  // a = (T*)malloc(sizeof(T) * ARRAY_SIZE);
+  // b = (T*)malloc(sizeof(T) * ARRAY_SIZE);
+  // c = (T*)malloc(sizeof(T) * ARRAY_SIZE);
+  // cudaMalloc((void**)&d_a, sizeof(T)*ARRAY_SIZE);
+  // cudaMalloc((void**)&d_b, sizeof(T)*ARRAY_SIZE);
+  // cudaMalloc((void**)&d_c, sizeof(T)*ARRAY_SIZE);
+  a = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
+  b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
+  c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
+  d_a = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
+  d_b = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
+  d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
 #endif
 }
@@ -48,14 +60,17 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
 template <class T>
 RAJAStream<T>::~RAJAStream()
 {
+  h_alloc.deallocate(a);
+  h_alloc.deallocate(b);
+  h_alloc.deallocate(c);
 #ifdef RAJA_TARGET_CPU
   free(d_a);
   free(d_b);
   free(d_c);
 #else
-  cudaFree(d_a);
-  cudaFree(d_b);
-  cudaFree(d_c);
+  d_alloc.deallocate(d_a);
+  d_alloc.deallocate(d_b);
+  d_alloc.deallocate(d_c);
 #endif
 }
 
@@ -80,9 +95,9 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
     c[i] = initC;
   }
 
-  cudaMemcpy(d_a, a, sizeof(T)*array_size, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_b, b, sizeof(T)*array_size, cudaMemcpyHostToDevice);
-  cudaMemcpy(d_c, c, sizeof(T)*array_size, cudaMemcpyHostToDevice);
+  rm.copy(d_a, a, sizeof(T)*array_size);
+  rm.copy(d_b, b, sizeof(T)*array_size);
+  rm.copy(d_c, c, sizeof(T)*array_size);
 
 }
 
