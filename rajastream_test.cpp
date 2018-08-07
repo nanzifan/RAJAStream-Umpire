@@ -21,9 +21,9 @@ int main(int argc, char *argv[])
 
 	for (int i=0; i<array_size; i++)
 	{
-		a[i] = initA;
-		b[i] = initB;
-		c[i] = initC;
+		a[i] = 1.0;
+		b[i] = 2.0;
+		c[i] = 0.0;
 	}
 
 	std::cout << "host init finish" << std::endl;
