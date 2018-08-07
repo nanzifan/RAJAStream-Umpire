@@ -17,6 +17,14 @@ int main(int argc, char *argv[])
     double* d_b;
     double* d_c;
 
+    std::cout << "memory allocation\n"; 
+	a = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+	b = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+	c = (double*)malloc(sizeof(double) * ARRAY_SIZE);
+	cudaMalloc((void**)&d_a, sizeof(double)*ARRAY_SIZE);
+	cudaMalloc((void**)&d_b, sizeof(double)*ARRAY_SIZE);
+	cudaMalloc((void**)&d_c, sizeof(double)*ARRAY_SIZE);
+
     std::cout << "init" << std::endl;
 
 	for (int i=0; i<array_size; i++)
