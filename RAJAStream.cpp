@@ -24,7 +24,6 @@ RAJAStream::RAJAStream(const unsigned int ARRAY_SIZE)
   cudaMalloc((void**)&d_a, sizeof(double)*ARRAY_SIZE);
   cudaMalloc((void**)&d_b, sizeof(double)*ARRAY_SIZE);
   cudaMalloc((void**)&d_c, sizeof(double)*ARRAY_SIZE);
-  // cudaDeviceSynchronize();
 
 }
 
