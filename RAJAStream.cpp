@@ -34,7 +34,7 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   d_b = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
   d_c = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
 #else
-  std::cout << "memory allocation\n"; 
+  // std::cout << "memory allocation\n"; 
   a = (T*)malloc(sizeof(T) * ARRAY_SIZE);
   b = (T*)malloc(sizeof(T) * ARRAY_SIZE);
   c = (T*)malloc(sizeof(T) * ARRAY_SIZE);
@@ -62,7 +62,7 @@ RAJAStream<T>::~RAJAStream()
 template <class T>
 void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
 {
-  std::cout << "init" << std::endl;
+  // std::cout << "init" << std::endl;
   // // T* RAJA_RESTRICT a = d_a;
   // // T* RAJA_RESTRICT b = d_b;
   // // T* RAJA_RESTRICT c = d_c;
@@ -81,17 +81,17 @@ void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
     c[i] = initC;
   }
 
-  std::cout << "host init finish" << std::endl;
-  for (int i=0; i<array_size; i++)
-  {
-    std::cout << "a[i] " << a[i] << " b[i] " << b[i] << " c[i] " << c[i] << std::endl;
-  }
+  // std::cout << "host init finish" << std::endl;
+  // for (int i=0; i<array_size; i++)
+  // {
+  //   // std::cout << "a[i] " << a[i] << " b[i] " << b[i] << " c[i] " << c[i] << std::endl;
+  // }
 
   cudaMemcpy(d_a, a, sizeof(T)*array_size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_b, b, sizeof(T)*array_size, cudaMemcpyHostToDevice);
   cudaMemcpy(d_c, c, sizeof(T)*array_size, cudaMemcpyHostToDevice);
 
-  std::cout << "end init" << std::endl;
+  // std::cout << "end init" << std::endl;
 
   // T* tmp1 = (T*)malloc(sizeof(T) * array_size);
   // T* tmp2 = (T*)malloc(sizeof(T) * array_size);
@@ -111,7 +111,7 @@ template <class T>
 void RAJAStream<T>::read_arrays(
         std::vector<T>& a, std::vector<T>& b, std::vector<T>& c)
 {
-    std::cout << "read" << std::endl;
+    // std::cout << "read" << std::endl;
 
   cudaMemcpy(a.data(), d_a, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
   cudaMemcpy(b.data(), d_b, sizeof(T)*array_size, cudaMemcpyDeviceToHost);
@@ -128,8 +128,8 @@ void RAJAStream<T>::read_arrays(
 template <class T>
 void RAJAStream<T>::copy()
 {
-  std::cout << "copy" << std::endl;
-  std::cout << "array_size is " << array_size << std::endl;
+  // std::cout << "copy" << std::endl;
+  // std::cout << "array_size is " << array_size << std::endl;
 
   // T* tmp1 = (T*)malloc(sizeof(T) * array_size);
   // T* tmp2 = (T*)malloc(sizeof(T) * array_size);
@@ -153,8 +153,8 @@ void RAJAStream<T>::copy()
   {
     // std::cout << "inside copy, i is " << i << std::endl;
     // std::cout << "d_a[i] is " << d_a[i] << std::endl;
-    printf("inside copy, i is%d\n", i);
-    printf("d_a[i] is %lf\n", a[i]);
+    // printf("inside copy, i is%d\n", i);
+    // printf("d_a[i] is %lf\n", a[i]);
     c[i] = a[i];
   });
 }
@@ -162,7 +162,7 @@ void RAJAStream<T>::copy()
 template <class T>
 void RAJAStream<T>::mul()
 {
-    std::cout << "mul" << std::endl;
+    // std::cout << "mul" << std::endl;
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT c = d_c;
   const T scalar = startScalar;
@@ -175,7 +175,7 @@ void RAJAStream<T>::mul()
 template <class T>
 void RAJAStream<T>::add()
 {
-  std::cout << "add" << std::endl;
+  // std::cout << "add" << std::endl;
 
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
@@ -189,7 +189,7 @@ void RAJAStream<T>::add()
 template <class T>
 void RAJAStream<T>::triad()
 {
-    std::cout << "triad" << std::endl;
+    // std::cout << "triad" << std::endl;
 
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
@@ -204,7 +204,7 @@ void RAJAStream<T>::triad()
 template <class T>
 T RAJAStream<T>::dot()
 {
-    std::cout << "dot" << std::endl;
+    // std::cout << "dot" << std::endl;
 
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
