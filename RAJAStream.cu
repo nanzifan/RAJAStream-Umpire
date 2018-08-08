@@ -61,8 +61,8 @@ RAJAStream<T>::~RAJAStream()
   free(d_b);
   free(d_c);
 #else
-  dc_alloc.deallocate(d_a);
-  d_alloc.deallocate(d_b);
+  d_const_alloc.deallocate(d_a);
+  d_const_alloc.deallocate(d_b);
   d_alloc.deallocate(d_c);
 #endif
 }
