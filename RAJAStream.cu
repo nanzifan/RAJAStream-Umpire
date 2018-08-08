@@ -26,7 +26,7 @@ using RAJA::RangeSegment;
 auto& rm = umpire::ResourceManager::getInstance();
 auto h_alloc = rm.getAllocator("HOST");
 auto d_alloc = rm.getAllocator("DEVICE");
-auto dc_alloc = rm.getAllocator("DEVICE_CONST");
+auto d_const_alloc = rm.getAllocator("DEVICE_CONST");
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
@@ -40,18 +40,11 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   d_b = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
   d_c = (T*)aligned_alloc(ALIGNMENT, sizeof(T)*ARRAY_SIZE);
 #else
-  // std::cout << "memory allocation\n"; 
-  // a = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  // b = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  // c = (T*)malloc(sizeof(T) * ARRAY_SIZE);
-  // cudaMalloc((void**)&d_a, sizeof(T)*ARRAY_SIZE);
-  // cudaMalloc((void**)&d_b, sizeof(T)*ARRAY_SIZE);
-  // cudaMalloc((void**)&d_c, sizeof(T)*ARRAY_SIZE);
   a = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
-  d_a = static_cast<T*>(dc_alloc.allocate(array_size * sizeof(T)));
-  d_b = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
+  d_a = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
+  d_b = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
 #endif
@@ -145,10 +138,6 @@ void RAJAStream<T>::copy()
   RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
     [=] RAJA_DEVICE (int i)
   {
-    // std::cout << "inside copy, i is " << i << std::endl;
-    // std::cout << "d_a[i] is " << d_a[i] << std::endl;
-    // printf("inside copy, i is%d\n", i);
-    // printf("d_a[i] is %lf\n", a[i]);
     c[i] = a[i];
   });
 }
@@ -174,7 +163,8 @@ void RAJAStream<T>::add()
   T* RAJA_RESTRICT a = d_a;
   T* RAJA_RESTRICT b = d_b;
   T* RAJA_RESTRICT c = d_c;
-  forall<RAJA::cuda_exec<256>>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
+  RAJA::forall<RAJA::cuda_exec<256>>(RAJA::RangeSegment(0, array_size), 
+    [=] RAJA_DEVICE (RAJA::Index_type index)
   {
     c[index] = a[index] + b[index];
   });
