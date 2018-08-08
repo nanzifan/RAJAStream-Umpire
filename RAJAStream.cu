@@ -44,7 +44,7 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   d_a = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
-  d_b = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
+  d_b = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
 #endif
@@ -62,7 +62,7 @@ RAJAStream<T>::~RAJAStream()
   free(d_c);
 #else
   d_const_alloc.deallocate(d_a);
-  d_const_alloc.deallocate(d_b);
+  d_alloc.deallocate(d_b);
   d_alloc.deallocate(d_c);
 #endif
 }
