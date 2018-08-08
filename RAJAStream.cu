@@ -19,6 +19,7 @@ using RAJA::RangeSegment;
 // #define ARRAY_SIZE 33554432
 // #endif
 
+
 #ifndef ALIGNMENT
 #define ALIGNMENT (2*1024*1024) // 2MB
 #endif
@@ -27,6 +28,8 @@ auto& rm = umpire::ResourceManager::getInstance();
 auto h_alloc = rm.getAllocator("HOST");
 auto d_alloc = rm.getAllocator("DEVICE");
 auto d_const_alloc = rm.getAllocator("DEVICE_CONST");
+
+int offset = 0;
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
@@ -44,7 +47,8 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   d_a = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
-  d_b = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
+  offset += array_size;
+  d_b = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T))) + offset*sizeof(T);
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
 #endif
@@ -62,7 +66,7 @@ RAJAStream<T>::~RAJAStream()
   free(d_c);
 #else
   d_const_alloc.deallocate(d_a);
-  d_alloc.deallocate(d_b);
+  d_const_alloc.deallocate(d_b);
   d_alloc.deallocate(d_c);
 #endif
 }
@@ -70,17 +74,6 @@ RAJAStream<T>::~RAJAStream()
 template <class T>
 void RAJAStream<T>::init_arrays(T initA, T initB, T initC)
 {
-  // std::cout << "init" << std::endl;
-  // // T* RAJA_RESTRICT a = d_a;
-  // // T* RAJA_RESTRICT b = d_b;
-  // // T* RAJA_RESTRICT c = d_c;
-  // forall<policy>(RangeSegment(0, array_size), [=] RAJA_DEVICE (RAJA::Index_type index)
-  // {
-  //   d_a[index] = initA;
-  //   d_b[index] = initB;
-  //   d_c[index] = initC;
-  // });
-
   for (int i=0; i<array_size; i++)
   {
     a[i] = initA;
