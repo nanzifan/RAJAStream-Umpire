@@ -29,7 +29,6 @@ auto h_alloc = rm.getAllocator("HOST");
 auto d_alloc = rm.getAllocator("DEVICE");
 auto d_const_alloc = rm.getAllocator("DEVICE_CONST");
 
-int offset = 0;
 
 template <class T>
 RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
@@ -47,7 +46,6 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   b = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   d_a = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
-  offset += array_size;
   d_b = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T))) + offset*sizeof(T);
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
