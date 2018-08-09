@@ -22,5 +22,5 @@ raja-device: main.cu RAJAStream_device.cu
 
 .PHONY: clean
 clean:
-	rm -f raja-stream
+	rm -f raja-stream raja-device
 
