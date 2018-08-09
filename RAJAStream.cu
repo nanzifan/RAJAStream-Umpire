@@ -47,8 +47,8 @@ RAJAStream<T>::RAJAStream(const unsigned int ARRAY_SIZE, const int device_index)
   c = static_cast<T*>(h_alloc.allocate(array_size * sizeof(T)));
   d_a = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
   d_b = static_cast<T*>(d_const_alloc.allocate(array_size * sizeof(T)));
-  std::cout << "d_a address " << d_a << endl;
-  std::cout << "d_b address " << d_b << endl;
+  std::cout << "d_a address " << d_a << std::endl;
+  std::cout << "d_b address " << d_b << std::endl;
   d_c = static_cast<T*>(d_alloc.allocate(array_size * sizeof(T)));
   cudaDeviceSynchronize();
 #endif
